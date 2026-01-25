@@ -10,7 +10,7 @@ services:
     plan: free
     ipAllowList: []
 
-  # 2. Evolution API (Agora com o Client correto)
+  # 2. Evolution API (Agora usando seu Dockerfile.api)
   - type: web
     name: evolution-api
     env: docker
@@ -19,6 +19,7 @@ services:
     envVars:
       - key: DATABASE_ENABLED
         value: "true"
+      # Ajustado para o nome técnico que a API exige
       - key: DATABASE_CONNECTION_CLIENT
         value: postgres
       - key: DATABASE_CONNECTION_URI
@@ -34,7 +35,7 @@ services:
       - key: AUTHENTICATION_API_KEY
         value: "4f7b2e9d1a8c6b5e0f9d2a3c4b5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3"
 
-  # 3. Seu Bot Python
+  # 3. Seu Bot Python (O cérebro financeiro)
   - type: web
     name: python-invest-bot
     env: docker
