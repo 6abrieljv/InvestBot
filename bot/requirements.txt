@@ -1,5 +1,3 @@
-flask
-requests
 yfinance
 pandas-ta
 pandas
