@@ -10,7 +10,7 @@ services:
     plan: free
     ipAllowList: []
 
-  # 2. Evolution API (Agora usando seu Dockerfile.api)
+  # 2. Evolution API (Corrigido: env: docker + chave de banco)
   - type: web
     name: evolution-api
     env: docker
@@ -19,7 +19,7 @@ services:
     envVars:
       - key: DATABASE_ENABLED
         value: "true"
-      # Ajustado para o nome técnico que a API exige
+      # Esta é a chave exata que resolve o erro de "provider invalid"
       - key: DATABASE_CONNECTION_CLIENT
         value: postgres
       - key: DATABASE_CONNECTION_URI
