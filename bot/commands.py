@@ -1,7 +1,7 @@
 import os
 import analysis
 
-# Pega o valor do aporte do seu arquivo .env (padrão R$ 185,00)
+
 APORTE_MENSAL = float(os.getenv("VALOR_APORTE", 185.00))
 
 def _extract_ticker(parts, command_hint):
@@ -36,7 +36,7 @@ def build_response(text):
         qtd = int(APORTE_MENSAL // res["price"])
         sobra = APORTE_MENSAL % res["price"]
         
-        # Montagem do Relatório Completo (Estilo Profissional)
+       
         header = "🚀 *ESTRATÉGIA INVESTBOT 2026 - RELATÓRIO COMPLETO* 🚀\n"
         
         aporte_msg = (f"\n💸 *SIMULADOR DE APORTE*\n"
@@ -48,7 +48,7 @@ def build_response(text):
         
         return f"{header}\n{res['msg']}\n{aporte_msg}{footer}"
 
-    # Mantém o comando /aporte separado caso queira usar apenas ele
+    
     if lowered.startswith("/aporte"):
         ticker, error = _extract_ticker(parts, "/aporte")
         if error:

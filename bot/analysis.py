@@ -6,8 +6,7 @@ import yfinance.cache as yf_cache
 import pandas_ta as ta
 import pandas as pd
 
-# ANALOGIA: Funções de tratamento de dados (Data Sanitization)
-# Garante que o sistema não dê "crash" com valores nulos da API.
+
 def _as_float(value):
     if value is None or (isinstance(value, float) and math.isnan(value)):
         return float("nan")
@@ -32,36 +31,6 @@ def _normalize_columns(df, symbol):
         return df.xs(symbol, axis=1, level=-1)
     return df.droplevel(-1, axis=1)
 
-def get_price(ticker):
-    ticker = ticker.upper()
-    symbol = f"{ticker}.SA"
-    try:
-        cache_dir = os.path.join(os.path.dirname(__file__), ".cache")
-        os.makedirs(cache_dir, exist_ok=True)
-        yf_cache.set_cache_location(cache_dir)
-        socket.setdefaulttimeout(15)
-        df = yf.download(
-            symbol,
-            period="5d",
-            interval="1d",
-            progress=False,
-            timeout=15,
-            threads=False,
-            group_by="column",
-            multi_level_index=False,
-        )
-    except Exception:
-        return None
-
-    df = _normalize_columns(df, symbol)
-    if df.empty:
-        return None
-
-    price = _as_float(df.iloc[-1]["Close"])
-    if math.isnan(price):
-        return None
-    return price
-
 def get_analysis(ticker):
     ticker = ticker.upper()
     symbol = f"{ticker}.SA"
@@ -74,16 +43,7 @@ def get_analysis(ticker):
         yf_cache.set_cache_location(cache_dir)
         socket.setdefaulttimeout(15)
         
-        df = yf.download(
-            symbol,
-            period="1y",
-            interval="1d",
-            progress=False,
-            timeout=15,
-            threads=False,
-            group_by="column",
-            multi_level_index=False,
-        )
+        df = yf.download(symbol, period="1y", interval="1d", progress=False, timeout=15, threads=False)
         info = ticker_obj.info or {}
     except Exception:
         return None
@@ -171,7 +131,6 @@ def get_analysis(ticker):
     # Tendência de Longo Prazo
     trend = "Alta 📈" if price > sma200 else "Baixa 📉"
 
-    # --- NOVO SISTEMA DE VEREDITO (MAIS PRECISO) ---
     if score >= 7:
         veredito = "FORTE COMPRA 🟢"
     elif score >= 4:
