@@ -4,21 +4,22 @@ databases:
     plan: free
 
 services:
+  # 1. Redis
   - type: redis
     name: invest-bot-redis
     plan: free
     ipAllowList: []
 
-  # --- Evolution API (Corrigida com o Provider) ---
+  # 2. Evolution API (Agora com o Client correto)
   - type: web
     name: evolution-api
-    env: image
-    imageName: atendai/evolution-api:latest
+    env: docker
+    dockerfilePath: ./Dockerfile.api
     plan: free
     envVars:
       - key: DATABASE_ENABLED
         value: "true"
-      - key: DATABASE_TYPE # <--- ESTA É A CHAVE QUE FALTA
+      - key: DATABASE_CONNECTION_CLIENT
         value: postgres
       - key: DATABASE_CONNECTION_URI
         fromDatabase:
@@ -33,7 +34,7 @@ services:
       - key: AUTHENTICATION_API_KEY
         value: "4f7b2e9d1a8c6b5e0f9d2a3c4b5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3"
 
-  # --- Seu Bot Python ---
+  # 3. Seu Bot Python
   - type: web
     name: python-invest-bot
     env: docker
@@ -48,4 +49,4 @@ services:
       - key: INSTANCE_NAME
         value: "InvestBot"
       - key: VALOR_APORTE
-        value: "185.00" # Valor dos 10% do seu salário para investir
+        value: "185.00"
