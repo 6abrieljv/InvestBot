@@ -4,13 +4,13 @@ databases:
     plan: free
 
 services:
-  # 1. Redis
+  # 1. Redis (Cache para o QR Code)
   - type: redis
     name: invest-bot-redis
     plan: free
     ipAllowList: []
 
-  # 2. Evolution API (Corrigido: env: docker + chave de banco)
+  # 2. Evolution API (Corrigido para usar Dockerfile.api e Provider correto)
   - type: web
     name: evolution-api
     env: docker
@@ -35,7 +35,7 @@ services:
       - key: AUTHENTICATION_API_KEY
         value: "4f7b2e9d1a8c6b5e0f9d2a3c4b5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3"
 
-  # 3. Seu Bot Python (O cérebro financeiro)
+  # 3. Seu Bot Python (Já está configurado)
   - type: web
     name: python-invest-bot
     env: docker
