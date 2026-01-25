@@ -1,0 +1,57 @@
+services:
+  # 1. Banco de Dados PostgreSQL (Onde o bot guarda os dados)
+  - type: database
+    name: invest-bot-db
+    databaseName: bot_db
+    user: postgres
+    plan: free
+
+  # 2. Redis (Essencial para a Evolution API gerar o QR Code)
+  - type: redis
+    name: invest-bot-redis
+    plan: free
+    ipAllowList: [] # Permite apenas acesso interno dos teus serviços
+
+  # 3. Evolution API (O serviço que liga ao WhatsApp)
+  - type: web
+    name: evolution-api
+    env: docker
+    plan: free
+    # Usamos a imagem oficial diretamente
+    dockerCommand: "" 
+    envVars:
+      - key: DATABASE_ENABLED
+        value: "true"
+      - key: DATABASE_CONNECTION_URI
+        fromDatabase:
+          name: invest-bot-db
+          property: connectionString
+      - key: REDIS_ENABLED
+        value: "true"
+      - key: REDIS_HOST
+        fromRedis:
+          name: invest-bot-redis
+          property: host
+      - key: REDIS_PORT
+        fromRedis:
+          name: invest-bot-redis
+          property: port
+      - key: AUTHENTICATION_API_KEY
+        value: "CHANGE_ME"
+
+  # 4. O teu Bot Python (O cérebro da análise financeira)
+  - type: web
+    name: python-invest-bot
+    env: docker
+    rootDir: bot
+    dockerfilePath: Dockerfile
+    plan: free
+    envVars:
+      - key: EVO_URL
+        value: http://evolution-api:8080 # Comunicação interna entre containers
+      - key: EVO_API_KEY
+        value: "CHANGE_ME"
+      - key: INSTANCE_NAME
+        value: "InvestBot"
+      - key: VALOR_APORTE
+        value: "185.00"
