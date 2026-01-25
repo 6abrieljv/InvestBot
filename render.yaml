@@ -4,21 +4,22 @@ databases:
     plan: free
 
 services:
-  # 1. Redis (Serviço interno)
   - type: redis
     name: invest-bot-redis
     plan: free
     ipAllowList: []
 
-  # 2. Evolution API (Usando o Dockerfile que você criou no Passo 1)
+  # --- Evolution API (Corrigida com o Provider) ---
   - type: web
     name: evolution-api
-    env: docker
-    dockerfilePath: ./Dockerfile.api
+    env: image
+    imageName: atendai/evolution-api:latest
     plan: free
     envVars:
       - key: DATABASE_ENABLED
         value: "true"
+      - key: DATABASE_TYPE # <--- ESTA É A CHAVE QUE FALTA
+        value: postgres
       - key: DATABASE_CONNECTION_URI
         fromDatabase:
           name: invest-bot-db
@@ -32,7 +33,7 @@ services:
       - key: AUTHENTICATION_API_KEY
         value: "4f7b2e9d1a8c6b5e0f9d2a3c4b5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3"
 
-  # 3. Seu Bot Python (O cérebro que calcula o IFR/RSI)
+  # --- Seu Bot Python ---
   - type: web
     name: python-invest-bot
     env: docker
@@ -47,4 +48,4 @@ services:
       - key: INSTANCE_NAME
         value: "InvestBot"
       - key: VALOR_APORTE
-        value: "185.00"
+        value: "185.00" # Valor dos 10% do seu salário para investir
