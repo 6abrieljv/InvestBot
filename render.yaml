@@ -1,23 +1,21 @@
-services:
-  # 1. Banco de Dados PostgreSQL
-  - type: database
-    name: invest-bot-db
+# 1. Seção exclusiva para o Banco de Dados
+databases:
+  - name: invest-bot-db
     databaseName: bot_db
     user: postgres
     plan: free
 
-  # 2. Redis para a Evolution API
+services:
+  # 2. Redis (Fica dentro de services)
   - type: redis
     name: invest-bot-redis
     plan: free
-    ipAllowList: [] # Permite apenas acesso interno
+    ipAllowList: []
 
-  # 3. Evolution API (Web Service)
+  # 3. Evolution API
   - type: web
     name: evolution-api
     env: docker
-    dockerContext: .
-    dockerFilePath: ./Dockerfile # Atenção: aqui usaremos a imagem oficial no deploy manual ou via Dockerfile
     plan: free
     envVars:
       - key: DATABASE_ENABLED
@@ -37,21 +35,21 @@ services:
           name: invest-bot-redis
           property: port
       - key: AUTHENTICATION_API_KEY
-        value: "4f7b2e9d1a8c6b5e0f9d2a3c4b5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3" # Sua chave do .env
+        value: "4f7b2e9d1a8c6b5e0f9d2a3c4b5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3"
 
-  # 4. O seu Bot Python
+  # 4. Seu Bot Python
   - type: web
     name: python-invest-bot
     env: docker
-    dockerContext: ./bot
-    dockerFilePath: ./bot/Dockerfile
+    rootDir: bot
+    dockerfilePath: Dockerfile
     plan: free
     envVars:
       - key: EVO_URL
-        value: https://evolution-api.onrender.com # O Render gerará uma URL para a API
+        value: https://evolution-api.onrender.com # Ajuste após o deploy
       - key: EVO_API_KEY
         value: "4f7b2e9d1a8c6b5e0f9d2a3c4b5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3"
       - key: INSTANCE_NAME
         value: "InvestBot"
       - key: VALOR_APORTE
-        value: "185.00" # Baseado no seu aporte de 10% do salário
+        value: "185.00"
