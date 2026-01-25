@@ -1,24 +1,24 @@
 services:
-  # 1. Banco de Dados PostgreSQL (Onde o bot guarda os dados)
+  # 1. Banco de Dados PostgreSQL
   - type: database
     name: invest-bot-db
     databaseName: bot_db
     user: postgres
     plan: free
 
-  # 2. Redis (Essencial para a Evolution API gerar o QR Code)
+  # 2. Redis para a Evolution API
   - type: redis
     name: invest-bot-redis
     plan: free
-    ipAllowList: [] # Permite apenas acesso interno dos teus serviços
+    ipAllowList: [] # Permite apenas acesso interno
 
-  # 3. Evolution API (O serviço que liga ao WhatsApp)
+  # 3. Evolution API (Web Service)
   - type: web
     name: evolution-api
     env: docker
+    dockerContext: .
+    dockerFilePath: ./Dockerfile # Atenção: aqui usaremos a imagem oficial no deploy manual ou via Dockerfile
     plan: free
-    # Usamos a imagem oficial diretamente
-    dockerCommand: "" 
     envVars:
       - key: DATABASE_ENABLED
         value: "true"
@@ -37,21 +37,21 @@ services:
           name: invest-bot-redis
           property: port
       - key: AUTHENTICATION_API_KEY
-        value: "CHANGE_ME"
+        value: "4f7b2e9d1a8c6b5e0f9d2a3c4b5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3" # Sua chave do .env
 
-  # 4. O teu Bot Python (O cérebro da análise financeira)
+  # 4. O seu Bot Python
   - type: web
     name: python-invest-bot
     env: docker
-    rootDir: bot
-    dockerfilePath: Dockerfile
+    dockerContext: ./bot
+    dockerFilePath: ./bot/Dockerfile
     plan: free
     envVars:
       - key: EVO_URL
-        value: http://evolution-api:8080 # Comunicação interna entre containers
+        value: https://evolution-api.onrender.com # O Render gerará uma URL para a API
       - key: EVO_API_KEY
-        value: "CHANGE_ME"
+        value: "4f7b2e9d1a8c6b5e0f9d2a3c4b5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3"
       - key: INSTANCE_NAME
         value: "InvestBot"
       - key: VALOR_APORTE
-        value: "185.00"
+        value: "185.00" # Baseado no seu aporte de 10% do salário
