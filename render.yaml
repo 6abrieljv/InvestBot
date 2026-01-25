@@ -1,18 +1,17 @@
-# 1. Seção exclusiva para o Banco de Dados
+# 1. Seção de Banco de Dados (Corrigida: removido usuário 'postgres' que é reservado)
 databases:
   - name: invest-bot-db
     databaseName: bot_db
-    user: postgres
     plan: free
 
 services:
-  # 2. Redis (Fica dentro de services)
+  # 2. Redis (Essencial para o QR Code da Evolution API)
   - type: redis
     name: invest-bot-redis
     plan: free
     ipAllowList: []
 
-  # 3. Evolution API
+  # 3. Evolution API (Web Service)
   - type: web
     name: evolution-api
     env: docker
@@ -26,18 +25,15 @@ services:
           property: connectionString
       - key: REDIS_ENABLED
         value: "true"
+      # Usando conexão direta pelo nome do serviço para evitar erros de validação
       - key: REDIS_HOST
-        fromRedis:
-          name: invest-bot-redis
-          property: host
+        value: invest-bot-redis
       - key: REDIS_PORT
-        fromRedis:
-          name: invest-bot-redis
-          property: port
+        value: "6379"
       - key: AUTHENTICATION_API_KEY
         value: "4f7b2e9d1a8c6b5e0f9d2a3c4b5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3"
 
-  # 4. Seu Bot Python
+  # 4. Seu Bot Python (O cérebro da análise técnica)
   - type: web
     name: python-invest-bot
     env: docker
@@ -46,7 +42,7 @@ services:
     plan: free
     envVars:
       - key: EVO_URL
-        value: https://evolution-api.onrender.com # Ajuste após o deploy
+        value: http://evolution-api:8080 # Comunicação interna rápida entre containers
       - key: EVO_API_KEY
         value: "4f7b2e9d1a8c6b5e0f9d2a3c4b5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3"
       - key: INSTANCE_NAME
