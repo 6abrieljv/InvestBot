@@ -69,9 +69,16 @@ def build_response(text):
         ticker, error = _extract_ticker(parts, "/preco")
         if error:
             return error
-        price = analysis.get_price(ticker)
-        if price is None:
+        details = analysis.get_price_details(ticker)
+        if not details or details.get("price") is None:
             return "⚠️ Ação não encontrada."
-        return f"💵 Preço atual de {ticker}: R$ {price:.2f}"
+        price = details["price"]
+        msg = f"💵 Preço atual de {ticker}: R$ {price:.2f}"
+        sources = details.get("sources") or {}
+        yahoo = sources.get("yahoo")
+        brapi = sources.get("brapi")
+        if yahoo is not None and brapi is not None and details.get("match") is False:
+            msg += f"\n⚠️ Fontes divergentes: Yahoo R$ {yahoo:.2f} | Brapi R$ {brapi:.2f}"
+        return msg
 
     return None

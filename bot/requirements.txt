@@ -1,3 +1,5 @@
 yfinance
 pandas-ta
 pandas
+python-dotenv
+brapi
